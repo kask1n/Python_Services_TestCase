@@ -11,7 +11,11 @@ Accept: application/json
 ###
 
 POST http://127.0.0.1:8000/api/data
-Accept: application/json
+Content-Type: application/json
+
+{
+  "log": "192.168.1.1 GET /example 200"
+}
 
 ###
 
