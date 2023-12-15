@@ -22,3 +22,7 @@ VALUES (gen_random_uuid(),
         'GET',
         '/example',
         200);
+
+/* Test count of rows in table */
+SELECT COUNT(*)
+FROM test_db.test_schema.test_table;

@@ -54,10 +54,19 @@ async def save_log(log: Log):
 
 
 @app.get("/api/data", response_model=List[object])
-async def get_logs():
+async def get_logs(position: int = 1, strings_count: int = 1):
     try:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM test_db.test_schema.test_table;")
+
+        query = sql.SQL("""
+            SELECT *
+            FROM test_db.test_schema.test_table
+            WHERE id_test_table >= %s
+            LIMIT %s;
+        """)
+        data = (position, strings_count)
+        cur.execute(query, data)
+
         logs = [{"id": row[1],
                  "created": row[2],
                  "log": {"ip": row[3],
