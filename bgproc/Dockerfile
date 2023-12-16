@@ -1,11 +1,15 @@
 FROM python:3.10
 
 WORKDIR /app
+ENV PYTHONPATH "${PYTHONPATH}:/app"
 
-COPY ../requirements.txt ./
+COPY ./requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-COPY ./ ./
+RUN mkdir bgproc && mkdir webapi
 
-CMD ["python3", "main.py", "--reload"]
+COPY ./bgproc/* ./bgproc
+COPY ./webapi/main.py ./webapi
+
+CMD ["python3", "bgproc/main.py", "--reload"]
