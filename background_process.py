@@ -18,7 +18,7 @@ async def save_to_file(data):
 
 
 async def background_task():
-    url = 'https://localhost:8000/api/data'
+    url = 'http://177.77.0.3:8000/api/data'
     while True:
         async with aiohttp.ClientSession() as session:
             curr = conn.cursor()

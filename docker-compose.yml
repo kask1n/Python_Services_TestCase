@@ -26,7 +26,7 @@ services:
   client_api:
     build:
       context: .
-      dockerfile: Dockerfile_client
+      dockerfile: Dockerfile_cliapi
     container_name: cli_api
 
   bg_processing:

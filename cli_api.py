@@ -11,7 +11,7 @@ from fastapi import HTTPException
 
 
 def generate_text():
-    ip_address = "{}.{}.{}.{}".format(randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))
+    ip_a = "{}.{}.{}.{}".format(randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))
 
     methods_list = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE"]
     http_method = choice(methods_list)
@@ -22,7 +22,7 @@ def generate_text():
 
     http_status_code = randint(200, 300)
 
-    return ip_address + ' ' + http_method + ' ' + uri + ' ' + str(http_status_code)
+    return ip_a + ' ' + http_method + ' ' + uri + ' ' + str(http_status_code)
 
 
 def make_post_request(url_src, data_src):
@@ -38,19 +38,24 @@ def make_post_request(url_src, data_src):
 THREADS = os.environ["THREADS"]
 DELAY = os.environ["DELAY"]
 
-client = docker.from_env()
-container = client.containers.get(os.environ["mywebapi"])
-container_info = container.attrs
+# client = docker.from_env()
+# container = client.containers.get("mywebapi")
+# container_info = container.attrs
+#
+# if 'NetworkSettings' in container_info and 'IPAddress' in container_info:
+#     ip_addr = container_info['NetworkSettings']['IPAddress']
+# else:
+#     ip_addr = None
+#
+# print(ip_addr)
+#
+# if ip_addr:
+#     url = f'http://{ip_addr}:8000/api/data'
+# else:
+#     url = f'http://localhost:8000/api/data'
 
-if 'NetworkSettings' in container_info and 'IPAddress' in container_info:
-    ip_address = container_info['NetworkSettings']['IPAddress']
-else:
-    ip_address = None
-
-if ip_address:
-    url = f'https://{ip_address}:8000/api/data'
-else:
-    url = f'https://localhost:8000/api/data'
+url = 'http://177.77.0.3:8000/api/data'
+# url = f'http://localhost:8000/api/data'
 
 for i in range(int(THREADS)):
     time.sleep(randint(0, int(DELAY)) / 1000)
