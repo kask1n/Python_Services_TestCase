@@ -5,6 +5,7 @@ import time
 from string import ascii_letters
 from random import randint, choice, choices
 
+import docker
 import requests
 from fastapi import HTTPException
 
@@ -37,7 +38,19 @@ def make_post_request(url_src, data_src):
 THREADS = os.environ["THREADS"]
 DELAY = os.environ["DELAY"]
 
-url = 'http://127.0.0.1:8000/api/data'
+client = docker.from_env()
+container = client.containers.get(os.environ["mywebapi"])
+container_info = container.attrs
+
+if 'NetworkSettings' in container_info and 'IPAddress' in container_info:
+    ip_address = container_info['NetworkSettings']['IPAddress']
+else:
+    ip_address = None
+
+if ip_address:
+    url = f'https://{ip_address}:8000/api/data'
+else:
+    url = f'https://localhost:8000/api/data'
 
 for i in range(int(THREADS)):
     time.sleep(randint(0, int(DELAY)) / 1000)

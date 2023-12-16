@@ -15,10 +15,10 @@ class Log(BaseModel):
 app = FastAPI()
 
 conn = psycopg.connect(
-    dbname="test_db",
-    user="test_user",
-    password="qwerty",
-    host="localhost",
+    dbname="postgres",
+    user="postgres",
+    password="postgres",
+    host="postgresql",
     port="5432"
 )
 
@@ -27,13 +27,13 @@ conn = psycopg.connect(
 async def save_log(log: Log):
     try:
         log_data = log.log.split()
-        ip_address, http_method, uri, http_status_code = log_data
+        ip_addr, method, urid, status_code = log_data
 
         log_id = uuid.uuid4()
         log_created = datetime.now()
 
         query = sql.SQL("""
-            INSERT INTO test_schema.test_table(log_uuid,
+            INSERT INTO log_table(log_uuid,
                                                log_datetime,
                                                ip_address,
                                                http_method,
@@ -41,7 +41,7 @@ async def save_log(log: Log):
                                                http_status_code)
             VALUES (%s, %s, %s, %s, %s, %s);
         """)
-        data = (log_id, log_created, ip_address, http_method, uri, http_status_code)
+        data = (log_id, log_created, ip_addr, method, urid, status_code)
 
         cur = conn.cursor()
         cur.execute(query, data)
@@ -60,8 +60,8 @@ async def get_logs(position: int = 1, strings_count: int = 1):
 
         query = sql.SQL("""
             SELECT *
-            FROM test_db.test_schema.test_table
-            WHERE id_test_table >= %s
+            FROM log_table
+            WHERE id_log_table >= %s
             LIMIT %s;
         """)
         data = (position, strings_count)

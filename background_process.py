@@ -18,13 +18,13 @@ async def save_to_file(data):
 
 
 async def background_task():
-    url = 'http://127.0.0.1:8000/api/data'
+    url = 'https://localhost:8000/api/data'
     while True:
         async with aiohttp.ClientSession() as session:
             curr = conn.cursor()
             curr.execute(sql.SQL("""
                 SELECT COUNT(*)
-                FROM test_db.test_schema.test_table;
+                FROM log_table;
             """))
             row = curr.fetchone()
             count = row[0]
