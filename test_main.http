@@ -10,7 +10,7 @@ Accept: application/json
 
 ###
 
-POST http://127.0.0.1:8000/api/data
+POST http://localhost:8000/api/data
 Content-Type: application/json
 
 {
@@ -20,4 +20,9 @@ Content-Type: application/json
 ###
 
 GET http://127.0.0.1:8000/api/data
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/api/data?position=2&strings_count=2
 Accept: application/json
