@@ -1,0 +1,51 @@
+# GENERAL
+docker network create \
+	--driver bridge \
+	--subnet 177.77.0.0/24 \
+	--gateway 177.77.0.1 \
+	--ip-range 177.77.0.2/24 \
+	locale
+
+
+# SQL
+docker pull postgres
+docker run -d --name postgresql -e POSTGRES_PASSWORD=postgres --network locale --ip 177.77.0.77 postgres
+docker exec -it postgresql bash
+
+PGPASSWORD=postgres psql -h localhost -p 5432 -d postgres -U postgres
+
+CREATE TABLE log_table
+(
+    id_log_table     SERIAL PRIMARY KEY,
+    log_uuid         VARCHAR(64),
+    log_datetime     TIMESTAMP,
+    ip_address       VARCHAR(32),
+    http_method      VARCHAR(32),
+    uri              VARCHAR(256),
+    http_status_code INTEGER
+);
+
+exit
+exit
+
+
+# WEB_API
+docker build -t webapi ./webapi
+docker run --name=mywebapi --network locale --ip 177.77.0.78 -p 8000:8000 -d webapi
+
+
+# CLIENT
+docker build -t cliapi ./cliapi
+docker run -e THREADS=4 -e DELAY=1000 --name=mycliapi --network locale cliapi
+
+
+# BACKGROUND_PROCEDURE
+docker build -t bgproc ./bgproc
+docker run --name=mybgproc --network locale -d bgproc
+
+
+# USEFUL_COMMANDS
+# docker rmi webapi:latest && docker build -t webapi -f Dockerfile ./
+# docker stop mywebapi && docker rm mywebapi && docker run --name mywebapi --network locale -v /var/run/docker.sock:/var/run/docker.sock webapi
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mywebapi
+# curl -X POST -H "Content-Type: application/json" -d '{"log": "192.168.1.1 GET /example 200"}' http://localhost:8000/api/data
