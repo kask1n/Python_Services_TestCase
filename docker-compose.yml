@@ -1,0 +1,45 @@
+version: '0.9'
+
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  top:
+    build:
+      context: .
+      dockerfile: Dockerfile_top
+    container_name: top_con
+
+  web_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web_api
+
+  client_api:
+    build:
+      context: .
+      dockerfile: Dockerfile_client
+    container_name: cli_api
+
+  bg_processing:
+    build:
+      context: .
+      dockerfile: Dockerfile_bgproc
+    container_name: bg_proc
+
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/postgresql
+      o: bind

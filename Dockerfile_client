@@ -1,8 +1,3 @@
-FROM ubuntu:latest
-LABEL authors="kask1n"
-
-ENTRYPOINT ["top", "-b"]
-
 FROM python:3.10
 
 WORKDIR /app
