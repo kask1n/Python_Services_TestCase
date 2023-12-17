@@ -10,6 +10,7 @@ docker network create \
 # SQL
 docker pull postgres
 docker volume create pgdata && docker run -d --name postgresql -e POSTGRES_PASSWORD=postgres --network locale --ip 177.77.0.77 -v pgdata:/var/lib/postgresql/data postgres
+
 docker exec -it postgresql bash
 PGPASSWORD=postgres psql -h localhost -p 5432 -d postgres -U postgres
 
