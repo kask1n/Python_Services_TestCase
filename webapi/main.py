@@ -23,6 +23,31 @@ class Log(BaseModel):
 app = FastAPI()
 
 
+@app.on_event("startup")
+async def startup_event():
+    curr = conn.cursor()
+
+    init_query = sql.SQL("""
+    CREATE TABLE IF NOT EXISTS log_table
+(
+    id_log_table     SERIAL PRIMARY KEY,
+    log_uuid         VARCHAR(64),
+    log_datetime     TIMESTAMP,
+    ip_address       VARCHAR(32),
+    http_method      VARCHAR(32),
+    uri              VARCHAR(256),
+    http_status_code INTEGER
+);
+    """)
+
+    curr.execute(init_query)
+
+    result = curr.fetchall()
+    print(result)
+
+    curr.close()
+
+
 @app.post("/api/data", status_code=201)
 async def save_log(log: Log):
     try:

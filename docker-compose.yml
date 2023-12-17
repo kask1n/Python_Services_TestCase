@@ -11,18 +11,6 @@ services:
         ipv4_address: 177.77.0.77
     volumes:
       - pgdata:/var/lib/postgresql/data
-  #  entrypoint: [ "/bin/bash", "-c", "echo \"
-  #                                    CREATE TABLE log_table
-  #                                    (
-  #                                        id_log_table     SERIAL PRIMARY KEY,
-  #                                        log_uuid         VARCHAR(64),
-  #                                        log_datetime     TIMESTAMP,
-  #                                        ip_address       VARCHAR(32),
-  #                                        http_method      VARCHAR(32),
-  #                                        uri              VARCHAR(256),
-  #                                        http_status_code INTEGER
-  #                                    );
-  #                                    \" | psql -U \"$DB_USER\"" ]
 
   webapi:
     build:
