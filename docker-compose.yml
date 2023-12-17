@@ -1,45 +1,76 @@
-version: '0.9'
-
+version: '3.8'
 
 services:
-  postgres:
-    image: postgres:latest
+  postgresql:
+    image: postgres
     environment:
-      POSTGRES_USER: postgres
+      DB_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+    networks:
+      locale:
+        ipv4_address: 177.77.0.77
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+  #  entrypoint: [ "/bin/bash", "-c", "echo \"
+  #                                    CREATE TABLE log_table
+  #                                    (
+  #                                        id_log_table     SERIAL PRIMARY KEY,
+  #                                        log_uuid         VARCHAR(64),
+  #                                        log_datetime     TIMESTAMP,
+  #                                        ip_address       VARCHAR(32),
+  #                                        http_method      VARCHAR(32),
+  #                                        uri              VARCHAR(256),
+  #                                        http_status_code INTEGER
+  #                                    );
+  #                                    \" | psql -U \"$DB_USER\"" ]
 
-  top:
+  webapi:
     build:
-      context: .
-      dockerfile: Dockerfile_top
-    container_name: top_con
+      context: ./
+      dockerfile: ./webapi/Dockerfile
+    networks:
+      locale:
+        ipv4_address: 177.77.0.78
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresql
 
-  web_api:
+  cliapi:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: web_api
+      context: ./
+      dockerfile: ./cliapi/Dockerfile
+    environment:
+      THREADS: 4
+      DELAY: 1000
+    volumes:
+      - ~/cliapi_client.log:/app/client.log
+    networks:
+      - locale
+    depends_on:
+      - webapi
 
-  client_api:
+  bgproc:
     build:
-      context: .
-      dockerfile: Dockerfile_client
-    container_name: cli_api
+      context: ./
+      dockerfile: ./bgproc/Dockerfile
+    volumes:
+      - ~/bgproc_data.txt:/app/data.txt
+    networks:
+      - locale
+    depends_on:
+      - postgresql
+      - webapi
 
-  bg_processing:
-    build:
-      context: .
-      dockerfile: Dockerfile_bgproc
-    container_name: bg_proc
-
+networks:
+  locale:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 177.77.0.0/24
+          gateway: 177.77.0.1
+          ip_range: 177.77.0.2/24
 
 volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/postgresql
-      o: bind
+  pgdata:

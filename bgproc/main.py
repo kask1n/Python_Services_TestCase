@@ -1,10 +1,9 @@
-from random import randint
-
 import aiohttp
-
 import asyncio
 
-from main import conn, sql
+from random import randint
+
+from webapi.main import conn, sql
 
 
 async def fetch_data(session, url):
@@ -17,8 +16,7 @@ async def save_to_file(data):
         file.write(data + '\n')
 
 
-async def background_task():
-    url = 'https://localhost:8000/api/data'
+async def background_task(url):
     while True:
         async with aiohttp.ClientSession() as session:
             curr = conn.cursor()
@@ -36,7 +34,8 @@ async def background_task():
 
 
 async def main():
-    await background_task()
+    url = 'http://177.77.0.78:8000/api/data'
+    await background_task(url)
 
 
 if __name__ == '__main__':

@@ -1,18 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
-
-from datetime import datetime
 from psycopg import sql
 import psycopg
+
+from datetime import datetime
+from typing import List
 import uuid
-
-
-class Log(BaseModel):
-    log: str
-
-
-app = FastAPI()
 
 conn = psycopg.connect(
     dbname="postgres",
@@ -21,6 +14,13 @@ conn = psycopg.connect(
     host="postgresql",
     port="5432"
 )
+
+
+class Log(BaseModel):
+    log: str
+
+
+app = FastAPI()
 
 
 @app.post("/api/data", status_code=201)
