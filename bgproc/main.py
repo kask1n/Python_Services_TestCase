@@ -25,9 +25,12 @@ async def background_task(url):
                 FROM log_table;
             """))
             row = curr.fetchone()
-            count = row[0]
 
-            data = await fetch_data(session, url + f'?position={randint(1, int(count))}&strings_count={randint(1, 5)}')
+            count = row[0]
+            if not count:
+                count = 1
+
+            data = await fetch_data(session, url + f'?position={randint(1, count)}&strings_count={randint(1, 5)}')
             await save_to_file(data)
 
         await asyncio.sleep(7)
