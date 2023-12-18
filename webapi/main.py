@@ -41,11 +41,13 @@ async def startup_event():
     """)
 
     curr.execute(init_query)
-
-    result = curr.fetchall()
-    print(result)
-
     curr.close()
+    conn.commit()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    conn.close()
 
 
 @app.post("/api/data", status_code=201)
@@ -59,19 +61,19 @@ async def save_log(log: Log):
 
         query = sql.SQL("""
             INSERT INTO log_table(log_uuid,
-                                               log_datetime,
-                                               ip_address,
-                                               http_method,
-                                               uri,
-                                               http_status_code)
+                                  log_datetime,
+                                  ip_address,
+                                  http_method,
+                                  uri,
+                                  http_status_code)
             VALUES (%s, %s, %s, %s, %s, %s);
         """)
         data = (log_id, log_created, ip_addr, method, urid, status_code)
 
         cur = conn.cursor()
         cur.execute(query, data)
-        conn.commit()
         cur.close()
+        conn.commit()
         return "Лог сохранeн"
     except Exception as e:
         print(e)
@@ -100,6 +102,8 @@ async def get_logs(position: int = 1, strings_count: int = 1):
                          "status_code": row[6]}
                  } for row in cur.fetchall()]
         cur.close()
+        conn.commit()
+
         return logs
     except Exception as e:
         print(e)
