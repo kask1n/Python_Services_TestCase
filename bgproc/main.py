@@ -28,7 +28,7 @@ async def background_task(url):
 
             count = row[0]
             if not count:
-                count = 1
+                count = 2
 
             data = await fetch_data(session, url + f'?position={randint(1, count)}&strings_count={randint(1, 5)}')
             await save_to_file(data)
